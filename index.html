@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StarFam Sacco - Savings & Loans</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    color: #333;
+}
+.header {
+    background: rgba(255,255,255,0.98);
+    padding: 15px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.logo { font-size: 24px; font-weight: bold; color: #1e3c72; }
+.logo span { color: #f39c12; }
+.nav-btn {
+    background: #1e3c72;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 14px;
+}
+.nav-btn:hover { background: #2a5298; }
+.nav-btn.logout { background: #e74c3c; }
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+}
+h1 { color: #1e3c72; margin-bottom: 10px; }
+h2 { color: #1e3c72; margin-bottom: 15px; border-bottom: 2px solid #f39c12; padding-bottom: 8px; }
+h3 { color: #2a5298; margin: 15px 0 10px; }
+
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.3s; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+input, select, textarea {
+    padding: 10px;
+    margin: 6px 0;
+    width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+input:focus, textarea:focus { outline: none; border-color: #1e3c72; }
+label { font-weight: bold; display: block; margin-top: 10px; color: #2c3e50; font-size: 14px; }
+
+.btn {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: transform 0.2s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(30,60,114,0.4); }
+.btn-sm { padding: 6px 12px; font-size: 13px; margin: 3px; }
+.btn-success { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+.btn-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+.btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+.btn-info { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+.btn-block { width: 100%; }
+
+.alert-box { padding: 12px; border-radius: 6px; margin-top: 15px; display: none; }
+.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+.reg-number {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #1e3c72;
+    background: #fff3cd;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: inline-block;
+    margin: 10px 0;
+    border: 2px dashed #f39c12;
+}
+
+/* Profile Picture Styles */
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #1e3c72;
+    background: #ecf0f1;
+    display: inline-block;
+}
+.avatar-sm { width: 40px; height: 40px; }
+.avatar-lg { width: 100px; height: 100px; }
+.avatar-xl { width: 150px; height: 150px; }
+
+.avatar-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+.avatar-upload-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px dashed #1e3c72;
+    background: #ecf0f1;
+}
+
+/* Dashboard Header with Avatar */
+.dash-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+    border-radius: 10px;
+}
+.dash-header-info { flex: 1; }
+.dash-header-info h2 { margin: 0; border: none; padding: 0; }
+.dash-header-info p { color: #7f8c8d; margin: 3px 0; }
+
+/* Phone Card - Deposit Destination */
+.phone-card {
+    background: linear-gradient(135deg, #27ae60 0%, #16a085 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(39, 174, 96, 0.3);
+}
+.phone-card h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+.phone-card .phone-number {
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin: 5px 0;
+}
+.phone-card .phone-note {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-top: 5px;
+}
+
+/* Dashboard Grid */
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+.stat-card {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.stat-card.gold { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+.stat-card.green { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+.stat-card.red { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+.stat-card h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+.stat-card .value { font-size: 28px; font-weight: bold; margin-top: 8px; }
+.stat-card .sub { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+
+/* Leaderboard */
+.leaderboard { margin-top: 15px; }
+.leader-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid #1e3c72;
+}
+.leader-item.top1 { background: #fff8e1; border-left-color: #f39c12; }
+.leader-item.top2 { background: #f5f5f5; border-left-color: #95a5a6; }
+.leader-item.top3 { background: #fbe9e7; border-left-color: #d35400; }
+.leader-rank { 
+    font-size: 18px; 
+    font-weight: bold; 
+    margin-right: 15px; 
+    min-width: 30px;
+    color: #1e3c72;
+}
+.leader-info { display: flex; align-items: center; flex: 1; gap: 10px; }
+.leader-name { font-weight: bold; color: #2c3e50; }
+.leader-amount { font-weight: bold; color: #27ae60; font-size: 16px; }
+
+/* Loan Status */
+.loan-box {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border-left: 4px solid #ffc107;
+}
+.pending-box {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Action Buttons */
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+.action-btn {
+    padding: 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+.action-btn:hover { transform: scale(1.02); }
+.action-btn.save { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+.action-btn.loan { background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%); }
+
+/* Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Approval List */
+.approval-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid #f39c12;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.approval-item strong { color: #1e3c72; }
+.approval-item-content { flex: 1; }
+
+/* Member Management */
+.member-item {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid #1e3c72;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.member-info { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 12px; }
+.member-actions { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* Detail View */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+.detail-item {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+}
+.detail-item label {
+    font-size: 11px;
+    color: #7f8c8d;
+    margin: 0;
+    text-transform: uppercase;
+}
+.detail-item .value {
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: bold;
+    margin-top: 3px;
+}
+.detail-item.full { grid-column: 1 / -1; }
+
+.password-field {
+    font-family: monospace;
+    background: #fff3cd;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px dashed #f39c12;
+    word-break: break-all;
+}
+
+.history-item {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border-left: 3px solid #1e3c72;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .header { flex-direction: column; align-items: flex-start; }
+    .nav-btn { margin: 5px 5px 5px 0; }
+    .action-grid { grid-template-columns: 1fr; }
+    .stat-card .value { font-size: 22px; }
+    .phone-card .phone-number { font-size: 22px; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .dash-header { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">⭐ Star<span>Fam</span> Sacco</div>
+    <div id="navButtons"></div>
+</div>
+
+<div class="container">
+
+    <!-- LANDING / LOGIN -->
+    <div id="loginView" class="view active">
+        <div class="card">
+            <h1>Welcome to StarFam Sacco</h1>
+            <p style="color:#7f8c8d; margin-bottom: 20px;">Your trusted savings and loans cooperative</p>
+            
+            <h3>🔐 Member Login</h3>
+            <label>Registration Number (Login ID):</label>
+            <input type="text" id="loginId" placeholder="STARFAM-XXXXX">
+            <label>Password:</label>
+            <input type="password" id="loginPass" placeholder="Enter password">
+            <button class="btn btn-block" onclick="login()">Log In</button>
+            <div id="loginError" class="alert-box error"></div>
+
+            <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+
+            <h3>👤 Staff / Admin Login</h3>
+            <select id="staffRole">
+                <option value="">-- Select Role --</option>
+                <option value="admin">System Admin</option>
+                <option value="chair">Chairperson</option>
+                <option value="treasurer">Treasurer</option>
+            </select>
+            <label>Password:</label>
+            <input type="password" id="staffPass" placeholder="Staff password">
+            <button class="btn btn-block btn-warning" onclick="staffLogin()">Staff Login</button>
+            <div id="staffError" class="alert-box error"></div>
+
+            <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+            <p style="text-align:center; color:#7f8c8d; font-size:13px;">
+                New member? Ask the Admin to register you and send you a bio-data link.
+            </p>
+        </div>
+    </div>
+
+    <!-- ADMIN REGISTRATION -->
+    <div id="adminRegView" class="view">
+        <div class="card">
+            <h2>📝 Register New Member</h2>
+            <p style="color:#7f8c8d;">Enter basic contact info. System will generate a STARFAM-XXXXX Login ID and email a bio-data link.</p>
+            
+            <label>First Name:</label>
+            <input type="text" id="regFirst" placeholder="John">
+            <label>Last Name:</label>
+            <input type="text" id="regLast" placeholder="Doe">
+            <label>Phone Number:</label>
+            <input type="text" id="regPhone" placeholder="+254 7XX XXX XXX">
+            
+            <button class="btn" onclick="registerMember()">Register & Generate Login ID</button>
+            <div id="regSuccess" class="alert-box success">
+                <h3>✅ Member Created!</h3>
+                <p>Login ID generated:</p>
+                <div class="reg-number" id="newRegNo"></div>
+                <p>📧 Bio-data link sent to client's phone/email.</p>
+                <button class="btn btn-success" onclick="simulateBioDataLink()">Simulate Client Opening Link ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BIO-DATA LINK -->
+    <div id="bioDataView" class="view">
+        <div class="card">
+            <h2>📋 Complete Your Bio-Data</h2>
+            <div class="alert-box info" style="display:block;">
+                <strong>📧 Secure Link from StarFam Sacco</strong><br>
+                Your Login ID: <strong id="bioRegNo"></strong><br>
+                Please complete the form below to activate your account.
+            </div>
+
+            <h3>📸 Profile Picture</h3>
+            <div class="avatar-upload">
+                <img id="bioPicPreview" class="avatar-upload-preview" src="" alt="Preview" style="display:none;">
+                <div>
+                    <input type="file" id="bioPic" accept="image/*" onchange="previewPic(this, 'bioPicPreview')" style="width:auto;">
+                    <p style="font-size:12px; color:#7f8c8d; margin-top:5px;">Upload a clear photo (will be compressed)</p>
+                </div>
+            </div>
+
+            <label>Email Address:</label>
+            <input type="email" id="bioEmail" placeholder="your.email@example.com">
+            <label>Physical Address:</label>
+            <textarea id="bioAddress" rows="2" placeholder="P.O Box 123, Town"></textarea>
+            <label>Next of Kin (Name & Phone):</label>
+            <input type="text" id="bioKin" placeholder="Jane Doe - +254700000000">
+            <label>Employment / Business:</label>
+            <input type="text" id="bioJob" placeholder="Self-employed / Company Name">
+            
+            <h3>🔒 Create Your Password</h3>
+            <label>Password:</label>
+            <input type="password" id="bioPass" placeholder="Min 6 characters">
+            <label>Confirm Password:</label>
+            <input type="password" id="bioPass2" placeholder="Re-enter password">
+
+            <button class="btn btn-success btn-block" onclick="submitBioData()">Activate My Account</button>
+            <div id="bioSuccess" class="alert-box success">
+                <h3>✅ Account Activated!</h3>
+                <p>You can now log in using your STARFAM Login ID.</p>
+                <button class="btn" onclick="showView('loginView')">Go to Login ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENT DASHBOARD -->
+    <div id="dashView" class="view">
+        <div class="card">
+            <div class="dash-header">
+                <img id="dashAvatar" class="avatar avatar-lg" src="" alt="Profile">
+                <div class="dash-header-info">
+                    <h2 id="dashName"></h2>
+                    <p>ID: <strong id="dashReg" style="color:#1e3c72;"></strong></p>
+                    <p style="font-size:13px;" id="dashDay"></p>
+                </div>
+                <button class="btn btn-sm btn-info" onclick="openModal('editProfileModal')">✏️ Edit Profile</button>
+            </div>
+
+            <!-- DEPOSIT PHONE NUMBER CARD -->
+            <div class="phone-card">
+                <h4>💳 Send Your Savings To</h4>
+                <div class="phone-number" id="dashDepositPhone">+254 700 000 000</div>
+                <div class="phone-note">Send money to this number, then record your deposit below</div>
+            </div>
+
+            <div class="dash-grid">
+                <div class="stat-card green">
+                    <h4>💰 My Savings</h4>
+                    <div class="value" id="dashSavings">$0.00</div>
+                    <div class="sub">Confirmed balance</div>
+                </div>
+                <div class="stat-card gold">
+                    <h4>⏳ Pending Deposits</h4>
+                    <div class="value" id="dashPending">$0.00</div>
+                    <div class="sub">Awaiting Treasurer approval</div>
+                </div>
+                <div class="stat-card">
+                    <h4>📈 Active Loans</h4>
+                    <div class="value" id="dashLoanCount">0</div>
+                    <div class="sub">Outstanding</div>
+                </div>
+                <div class="stat-card red">
+                    <h4>🏆 My Rank</h4>
+                    <div class="value" id="dashRank">-</div>
+                    <div class="sub">In savings leaderboard</div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <h3>💼 Quick Actions</h3>
+            <div class="action-grid">
+                <button class="action-btn save" onclick="openModal('saveModal')">💰 Record Deposit</button>
+                <button class="action-btn loan" onclick="openModal('loanModal')">📥 Request Loan</button>
+            </div>
+
+            <!-- Pending Deposits List -->
+            <div id="dashPendingDeposits"></div>
+
+            <!-- Loan Status -->
+            <div id="dashLoanStatus"></div>
+
+            <!-- Leaderboard -->
+            <h3 style="margin-top:25px;">🏆 Savings Leaderboard - Top Savers</h3>
+            <div class="leaderboard" id="leaderboard"></div>
+        </div>
+    </div>
+
+    <!-- CHAIRPERSON DASHBOARD -->
+    <div id="chairView" class="view">
+        <div class="card">
+            <h2>👔 Chairperson - Loan Approvals</h2>
+            <p style="color:#7f8c8d;">Review and authorize loan requests from members.</p>
+            <div id="chairPending"></div>
+        </div>
+    </div>
+
+    <!-- TREASURER DASHBOARD -->
+    <div id="treasView" class="view">
+        <div class="card">
+            <h2>💼 Treasurer Dashboard</h2>
+            
+            <h3>💰 Pending Savings Deposits</h3>
+            <p style="color:#7f8c8d; font-size:13px;">Approve or reject deposits after verifying payment was received.</p>
+            <div id="treasDeposits"></div>
+
+            <hr style="margin: 25px 0;">
+
+            <h3>📥 Loans Ready for Disbursement</h3>
+            <p style="color:#7f8c8d; font-size:13px;">Disburse loans approved by the Chairperson.</p>
+            <div id="treasLoans"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminView" class="view">
+        <div class="card">
+            <h2>⚙️ System Admin Panel - Full Control</h2>
+            <p style="color:#e74c3c; font-weight:bold;">⚠️ Only the System Admin can modify system settings and manage all members.</p>
+            <p style="color:#7f8c8d; font-size:13px;">You have full access to view all account details, passwords, and perform any action.</p>
+
+            <h3>👥 Member Management</h3>
+            <button class="btn" onclick="showView('adminRegView')">+ Register New Member</button>
+            <div id="memberList" style="margin-top:15px;"></div>
+
+            <hr style="margin: 25px 0;">
+
+            <h3>🔧 System Settings</h3>
+            <label>Loan Interest Rate (%):</label>
+            <input type="number" id="setInterest" value="6">
+            <label>Loan Period (Weeks):</label>
+            <input type="number" id="setPeriod" value="2">
+            <label>Deposit Phone Number (where members send savings):</label>
+            <input type="text" id="setDepositPhone" placeholder="+254 7XX XXX XXX">
+            <label>Admin Password:</label>
+            <input type="password" id="setAdminPass" placeholder="Change admin password">
+            <label>Chairperson Password:</label>
+            <input type="password" id="setChairPass" placeholder="Change chairperson password">
+            <label>Treasurer Password:</label>
+            <input type="password" id="setTreasPass" placeholder="Change treasurer password">
+            <button class="btn btn-warning" onclick="saveSettings()">Save All Settings</button>
+
+            <hr style="margin: 25px 0;">
+
+            <h3>📧 Test 1-Week Email Alert</h3>
+            <button class="btn btn-danger" onclick="triggerAlert()">Trigger Reminder Email (Simulation)</button>
+            <div id="alertTest" class="alert-box info"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALS -->
+<div id="saveModal" class="modal-overlay">
+    <div class="modal">
+        <h2>💰 Record Savings Deposit</h2>
+        <div class="phone-card" style="margin:10px 0;">
+            <h4>Send Money To</h4>
+            <div class="phone-number" id="modalDepositPhone">+254 700 000 000</div>
+        </div>
+        <p style="color:#7f8c8d; font-size:13px;" id="saveDayNote"></p>
+        <p style="color:#e67e22; font-size:12px; margin-top:10px;">
+            ⏳ Note: Deposits require Treasurer approval before being added to your balance.
+        </p>
+        <label>Amount ($):</label>
+        <input type="number" id="saveAmount" placeholder="Enter amount">
+        <button class="btn btn-success btn-block" onclick="depositSavings()">Submit Deposit for Approval</button>
+        <button class="btn btn-danger btn-block" onclick="closeModal('saveModal')">Cancel</button>
+    </div>
+</div>
+
+<div id="loanModal" class="modal-overlay">
+    <div class="modal">
+        <h2>📥 Request a Loan</h2>
+        <p style="color:#7f8c8d; font-size:13px;">6% interest | 2-week repayment period</p>
+        <label>Loan Amount ($):</label>
+        <input type="number" id="loanAmount" placeholder="Enter amount" oninput="previewLoan()">
+        <div id="loanPreview" style="margin-top:15px; padding:12px; background:#f8f9fa; border-radius:6px; display:none;">
+            <strong>Interest (6%):</strong> $<span id="prevInterest">0.00</span><br>
+            <strong>Total to Repay:</strong> $<span id="prevTotal">0.00</span><br>
+            <strong>Due Date:</strong> <span id="prevDue"></span> (14 days)
+        </div>
+        <button class="btn btn-warning btn-block" onclick="requestLoan()">Submit Request</button>
+        <button class="btn btn-danger btn-block" onclick="closeModal('loanModal')">Cancel</button>
+    </div>
+</div>
+
+<div id="editProfileModal" class="modal-overlay">
+    <div class="modal">
+        <h2>✏️ Edit My Profile</h2>
+        <h3>📸 Profile Picture</h3>
+        <div class="avatar-upload">
+            <img id="editPicPreview" class="avatar-upload-preview" src="" alt="Preview">
+            <div>
+                <input type="file" id="editPic" accept="image/*" onchange="previewPic(this, 'editPicPreview')" style="width:auto;">
+                <p style="font-size:12px; color:#7f8c8d; margin-top:5px;">Upload a clear photo</p>
+            </div>
+        </div>
+        <label>Email:</label>
+        <input type="email" id="editProfileEmail">
+        <label>Phone:</label>
+        <input type="text" id="editProfilePhone">
+        <label>Address:</label>
+        <textarea id="editProfileAddress" rows="2"></textarea>
+        <label>Next of Kin:</label>
+        <input type="text" id="editProfileKin">
+        <label>Employment:</label>
+        <input type="text" id="editProfileJob">
+        <label>New Password (leave blank to keep current):</label>
+        <input type="password" id="editProfilePass" placeholder="New password">
+        <button class="btn btn-success btn-block" onclick="saveProfile()">Save Changes</button>
+        <button class="btn btn-danger btn-block" onclick="closeModal('editProfileModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- ADMIN: VIEW FULL MEMBER DETAILS -->
+<div id="viewDetailsModal" class="modal-overlay">
+    <div class="modal">
+        <h2>🔍 Full Member Details</h2>
+        <p style="color:#e74c3c; font-size:12px; font-weight:bold;">⚠️ ADMIN ACCESS - All account information visible</p>
+        <div id="viewDetailsContent"></div>
+        <button class="btn btn-block" onclick="closeModal('viewDetailsModal')">Close</button>
+    </div>
+</div>
+
+<!-- ADMIN: EDIT MEMBER -->
+<div id="editMemberModal" class="modal-overlay">
+    <div class="modal">
+        <h2>✏️ Edit Member (Admin)</h2>
+        <input type="hidden" id="editRegNo">
+        <h3>📸 Profile Picture</h3>
+        <div class="avatar-upload">
+            <img id="adminEditPicPreview" class="avatar-upload-preview" src="" alt="Preview">
+            <div>
+                <input type="file" id="adminEditPic" accept="image/*" onchange="previewPic(this, 'adminEditPicPreview')" style="width:auto;">
+                <p style="font-size:12px; color:#7f8c8d; margin-top:5px;">Admin can change member's photo</p>
+            </div>
+        </div>
+        <label>First Name:</label>
+        <input type="text" id="editFirst">
+        <label>Last Name:</label>
+        <input type="text" id="editLast">
+        <label>Phone:</label>
+        <input type="text" id="editPhone">
+        <label>Email:</label>
+        <input type="email" id="editEmail">
+        <label>Address:</label>
+        <textarea id="editAddress" rows="2"></textarea>
+        <label>Next of Kin:</label>
+        <input type="text" id="editKin">
+        <label>Employment:</label>
+        <input type="text" id="editJob">
+        <label>New Password (leave blank to keep current):</label>
+        <input type="password" id="editPass" placeholder="New password">
+        <button class="btn btn-success btn-block" onclick="saveEdit()">Save Changes</button>
+        <button class="btn btn-danger btn-block" onclick="closeModal('editMemberModal')">Cancel</button>
+    </div>
+</div>
+
+<script>
+// ============ DEFAULT AVATAR (SVG as base64) ============
+const DEFAULT_AVATAR = 'data:image/svg+xml;base64,' + btoa(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#bdc3c7"/>
+  <circle cx="50" cy="38" r="18" fill="#7f8c8d"/>
+  <path d="M 20 95 Q 20 60 50 60 Q 80 60 80 95 Z" fill="#7f8c8d"/>
+</svg>`);
+
+// ============ DATABASE (localStorage) ============
+let db = JSON.parse(localStorage.getItem('starfam_db')) || {
+    members: [],
+    pendingDeposits: [],
+    settings: { 
+        interest: 6, 
+        periodWeeks: 2,
+        depositPhone: '+254 712 345 678'
+    },
+    staff: {
+        admin: { pass: 'admin123' },
+        chair: { pass: 'chair123' },
+        treasurer: { pass: 'treas123' }
+    }
+};
+if (!db.pendingDeposits) db.pendingDeposits = [];
+if (!db.settings.depositPhone) db.settings.depositPhone = '+254 712 345 678';
+
+let currentUser = null;
+let pendingReg = null;
+let tempPicData = null; // temporary storage for profile pic during forms
+
+function saveDB() { 
+    try {
+        localStorage.setItem('starfam_db', JSON.stringify(db)); 
+    } catch(e) {
+        alert('⚠️ Storage full! Try using smaller profile pictures.');
+    }
+}
+
+// ============ IMAGE COMPRESSION ============
+function compressImage(file, callback, maxSize = 200, quality = 0.6) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Resize to max dimensions
+            if (width > height) {
+                if (width > maxSize) { height = height * (maxSize / width); width = maxSize; }
+            } else {
+                if (height > maxSize) { width = width * (maxSize / height); height = maxSize; }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function previewPic(input, previewId) {
+    const file = input.files[0];
+    if (!file) return;
+    compressImage(file, function(data) {
+        document.getElementById(previewId).src = data;
+        document.getElementById(previewId).style.display = 'block';
+        tempPicData = data;
+    });
+}
+
+function getAvatarSrc(pic) {
+    return pic || DEFAULT_AVATAR;
+}
+
+// ============ NAVIGATION ============
+function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'dashView') refreshDashboard();
+    if (id === 'chairView') refreshChair();
+    if (id === 'treasView') refreshTreas();
+    if (id === 'adminView') refreshAdmin();
+}
+
+function updateNav() {
+    const nav = document.getElementById('navButtons');
+    if (!currentUser) {
+        nav.innerHTML = '<button class="nav-btn" onclick="showView(\'loginView\')">Login</button>';
+    } else if (currentUser.role === 'client') {
+        nav.innerHTML = `<span style="margin-right:10px;">Hi, ${currentUser.firstName}</span>
+            <button class="nav-btn" onclick="showView('dashView')">Dashboard</button>
+            <button class="nav-btn logout" onclick="logout()">Logout</button>`;
+    } else if (currentUser.role === 'admin') {
+        nav.innerHTML = `<button class="nav-btn" onclick="showView('adminView')">Admin Panel</button>
+            <button class="nav-btn logout" onclick="logout()">Logout</button>`;
+    } else if (currentUser.role === 'chair') {
+        nav.innerHTML = `<button class="nav-btn" onclick="showView('chairView')">Approvals</button>
+            <button class="nav-btn logout" onclick="logout()">Logout</button>`;
+    } else if (currentUser.role === 'treasurer') {
+        nav.innerHTML = `<button class="nav-btn" onclick="showView('treasView')">Treasurer</button>
+            <button class="nav-btn logout" onclick="logout()">Logout</button>`;
+    }
+}
+
+function logout() {
+    currentUser = null;
+    updateNav();
+    showView('loginView');
+}
+
+// ============ REGISTRATION ============
+function generateRegNo() {
+    const rand = Math.floor(10000 + Math.random() * 90000);
+    return `STARFAM-${rand}`;
+}
+
+function registerMember() {
+    const first = document.getElementById('regFirst').value.trim();
+    const last = document.getElementById('regLast').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    if (!first || !last || !phone) { alert('Fill all fields'); return; }
+
+    const regNo = generateRegNo();
+    pendingReg = { regNo, firstName: first, lastName: last, phone };
+    
+    document.getElementById('newRegNo').innerText = regNo;
+    document.getElementById('regSuccess').style.display = 'block';
+}
+
+function simulateBioDataLink() {
+    document.getElementById('bioRegNo').innerText = pendingReg.regNo;
+    document.getElementById('bioPicPreview').style.display = 'none';
+    document.getElementById('bioPic').value = '';
+    tempPicData = null;
+    showView('bioDataView');
+}
+
+function submitBioData() {
+    if (!pendingReg) { alert('No pending registration'); return; }
+    const email = document.getElementById('bioEmail').value.trim();
+    const pass = document.getElementById('bioPass').value;
+    const pass2 = document.getElementById('bioPass2').value;
+    if (!email) { alert('Email required'); return; }
+    if (pass.length < 6) { alert('Password min 6 chars'); return; }
+    if (pass !== pass2) { alert('Passwords mismatch'); return; }
+
+    const member = {
+        ...pendingReg,
+        email,
+        address: document.getElementById('bioAddress').value,
+        nextOfKin: document.getElementById('bioKin').value,
+        employment: document.getElementById('bioJob').value,
+        password: pass,
+        profilePic: tempPicData || null,
+        savings: 0,
+        loans: [],
+        isActive: true,
+        createdAt: Date.now()
+    };
+    db.members.push(member);
+    saveDB();
+    document.getElementById('bioSuccess').style.display = 'block';
+}
+
+// ============ LOGIN ============
+function login() {
+    const id = document.getElementById('loginId').value.trim().toUpperCase();
+    const pass = document.getElementById('loginPass').value;
+    const err = document.getElementById('loginError');
+    err.style.display = 'none';
+
+    const member = db.members.find(m => m.regNo === id);
+    if (!member) { err.innerText = '❌ Registration number not found'; err.style.display='block'; return; }
+    if (!member.isActive) { err.innerText = '❌ Account not activated'; err.style.display='block'; return; }
+    if (member.password !== pass) { err.innerText = '❌ Wrong password'; err.style.display='block'; return; }
+
+    currentUser = { ...member, role: 'client' };
+    updateNav();
+    showView('dashView');
+}
+
+function staffLogin() {
+    const role = document.getElementById('staffRole').value;
+    const pass = document.getElementById('staffPass').value;
+    const err = document.getElementById('staffError');
+    err.style.display = 'none';
+    if (!role) { err.innerText='Select role'; err.style.display='block'; return; }
+    if (db.staff[role].pass !== pass) { err.innerText='❌ Wrong password'; err.style.display='block'; return; }
+    currentUser = { role, firstName: role.charAt(0).toUpperCase()+role.slice(1) };
+    updateNav();
+    if (role === 'admin') showView('adminView');
+    else if (role === 'chair') showView('chairView');
+    else showView('treasView');
+}
+
+// ============ DASHBOARD ============
+function refreshDashboard() {
+    if (!currentUser || currentUser.role !== 'client') return;
+    const m = db.members.find(x => x.regNo === currentUser.regNo);
+    
+    // Header with avatar
+    document.getElementById('dashAvatar').src = getAvatarSrc(m.profilePic);
+    document.getElementById('dashName').innerText = m.firstName + ' ' + m.lastName;
+    document.getElementById('dashReg').innerText = m.regNo;
+    document.getElementById('dashSavings').innerText = '$' + m.savings.toFixed(2);
+    document.getElementById('dashLoanCount').innerText = m.loans.filter(l => l.status !== 'Repaid' && l.status !== 'Rejected').length;
+
+    document.getElementById('dashDepositPhone').innerText = db.settings.depositPhone;
+
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const today = new Date().getDay();
+    const dayName = days[today];
+    const note = today === 0 ? '🌟 Sunday - Main savings day!' : '📅 Weekday - Minor savings accepted';
+    document.getElementById('dashDay').innerText = `Today is ${dayName}. ${note}`;
+
+    const sorted = [...db.members].filter(x=>x.isActive).sort((a,b) => b.savings - a.savings);
+    const rank = sorted.findIndex(x => x.regNo === m.regNo) + 1;
+    document.getElementById('dashRank').innerText = rank > 0 ? '#' + rank : '-';
+
+    const myPending = db.pendingDeposits.filter(d => d.memberRegNo === m.regNo && d.status === 'Pending');
+    const pendingTotal = myPending.reduce((sum, d) => sum + d.amount, 0);
+    document.getElementById('dashPending').innerText = '$' + pendingTotal.toFixed(2);
+
+    const pendDiv = document.getElementById('dashPendingDeposits');
+    if (myPending.length > 0) {
+        pendDiv.innerHTML = `<h3 style="margin-top:20px;">⏳ Your Pending Deposits</h3>` +
+            myPending.map(d => `
+                <div class="pending-box">
+                    <strong>$${d.amount.toFixed(2)}</strong> - Submitted ${new Date(d.createdAt).toLocaleDateString()}<br>
+                    Status: <strong>${d.status}</strong>
+                </div>`).join('');
+    } else {
+        pendDiv.innerHTML = '';
+    }
+
+    const activeLoans = m.loans.filter(l => l.status !== 'Repaid' && l.status !== 'Rejected');
+    const loanDiv = document.getElementById('dashLoanStatus');
+    if (activeLoans.length > 0) {
+        const l = activeLoans[0];
+        loanDiv.innerHTML = `<div class="loan-box">
+            <strong>📋 Active Loan</strong><br>
+            Principal: $${l.amount.toFixed(2)} | Total Due: $${l.totalDue.toFixed(2)}<br>
+            Due Date: ${new Date(l.dueDate).toLocaleDateString()}<br>
+            Status: <strong>${l.status}</strong>
+        </div>`;
+    } else {
+        loanDiv.innerHTML = '';
+    }
+
+    const lb = document.getElementById('leaderboard');
+    const top5 = sorted.slice(0, 5);
+    if (top5.length === 0) {
+        lb.innerHTML = '<p style="color:#7f8c8d;">No savers yet.</p>';
+    } else {
+        const classes = ['top1','top2','top3','',''];
+        lb.innerHTML = top5.map((x, i) => `
+            <div class="leader-item ${classes[i]}">
+                <div class="leader-rank">${i + 1}</div>
+                <div class="leader-info">
+                    <img class="avatar avatar-sm" src="${getAvatarSrc(x.profilePic)}" alt="">
+                    <div class="leader-name">${x.firstName} ${x.lastName}</div>
+                </div>
+                <div class="leader-amount">$${x.savings.toFixed(2)}</div>
+            </div>`).join('');
+    }
+}
+
+// ============ SAVINGS & LOANS ============
+function openModal(id) {
+    document.getElementById(id).classList.add('active');
+    if (id === 'saveModal') {
+        document.getElementById('modalDepositPhone').innerText = db.settings.depositPhone;
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const today = new Date().getDay();
+        document.getElementById('saveDayNote').innerText = 
+            today === 0 ? '🌟 Sunday - Main savings day (full deposit allowed)' : 
+            '📅 Weekday - Minor savings only';
+    }
+    if (id === 'editProfileModal') {
+        const m = db.members.find(x => x.regNo === currentUser.regNo);
+        document.getElementById('editPicPreview').src = getAvatarSrc(m.profilePic);
+        document.getElementById('editProfileEmail').value = m.email;
+        document.getElementById('editProfilePhone').value = m.phone;
+        document.getElementById('editProfileAddress').value = m.address || '';
+        document.getElementById('editProfileKin').value = m.nextOfKin || '';
+        document.getElementById('editProfileJob').value = m.employment || '';
+        document.getElementById('editProfilePass').value = '';
+        tempPicData = m.profilePic;
+    }
+}
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function depositSavings() {
+    const amt = parseFloat(document.getElementById('saveAmount').value);
+    if (!amt || amt <= 0) { alert('Enter valid amount'); return; }
+    
+    db.pendingDeposits.push({
+        id: Date.now(),
+        memberRegNo: currentUser.regNo,
+        memberName: currentUser.firstName + ' ' + currentUser.lastName,
+        amount: amt,
+        status: 'Pending',
+        createdAt: Date.now()
+    });
+    saveDB();
+    
+    alert(`✅ Deposit of $${amt.toFixed(2)} submitted!\n\n⏳ The Treasurer will verify and approve it shortly.`);
+    document.getElementById('saveAmount').value = '';
+    closeModal('saveModal');
+    refreshDashboard();
+}
+
+function previewLoan() {
+    const amt = parseFloat(document.getElementById('loanAmount').value);
+    const prev = document.getElementById('loanPreview');
+    if (amt > 0) {
+        const interest = amt * (db.settings.interest / 100);
+        const due = new Date();
+        due.setDate(due.getDate() + (db.settings.periodWeeks * 7));
+        document.getElementById('prevInterest').innerText = interest.toFixed(2);
+        document.getElementById('prevTotal').innerText = (amt + interest).toFixed(2);
+        document.getElementById('prevDue').innerText = due.toLocaleDateString();
+        prev.style.display = 'block';
+    } else prev.style.display = 'none';
+}
+
+function requestLoan() {
+    const amt = parseFloat(document.getElementById('loanAmount').value);
+    if (!amt || amt <= 0) { alert('Enter valid amount'); return; }
+    const m = db.members.find(x => x.regNo === currentUser.regNo);
+    const interest = amt * (db.settings.interest / 100);
+    const due = new Date();
+    due.setDate(due.getDate() + (db.settings.periodWeeks * 7));
+    m.loans.push({
+        amount: amt,
+        interest,
+        totalDue: amt + interest,
+        dueDate: due.toISOString(),
+        status: 'Pending Chairperson',
+        createdAt: Date.now()
+    });
+    saveDB();
+    alert(`✅ Loan request submitted! Total due: $${(amt+interest).toFixed(2)} in ${db.settings.periodWeeks} weeks.`);
+    document.getElementById('loanAmount').value = '';
+    closeModal('loanModal');
+    refreshDashboard();
+}
+
+// ============ CLIENT PROFILE EDIT ============
+function saveProfile() {
+    const m = db.members.find(x => x.regNo === currentUser.regNo);
+    m.email = document.getElementById('editProfileEmail').value.trim();
+    m.phone = document.getElementById('editProfilePhone').value.trim();
+    m.address = document.getElementById('editProfileAddress').value;
+    m.nextOfKin = document.getElementById('editProfileKin').value;
+    m.employment = document.getElementById('editProfileJob').value;
+    const newPass = document.getElementById('editProfilePass').value;
+    if (newPass.length >= 6) m.password = newPass;
+    if (tempPicData) m.profilePic = tempPicData;
+    saveDB();
+    closeModal('editProfileModal');
+    alert('✅ Profile updated!');
+    refreshDashboard();
+}
+
+// ============ CHAIRPERSON ============
+function refreshChair() {
+    const pending = [];
+    db.members.forEach(m => {
+        m.loans.forEach((l, idx) => {
+            if (l.status === 'Pending Chairperson') pending.push({member: m, loan: l, idx});
+        });
+    });
+    const div = document.getElementById('chairPending');
+    if (pending.length === 0) {
+        div.innerHTML = '<p style="color:#7f8c8d;">No pending loan requests.</p>';
+        return;
+    }
+    div.innerHTML = pending.map(p => `
+        <div class="approval-item">
+            <img class="avatar avatar-sm" src="${getAvatarSrc(p.member.profilePic)}" alt="">
+            <div class="approval-item-content">
+                <strong>${p.member.firstName} ${p.member.lastName}</strong> (${p.member.regNo})<br>
+                Amount: $${p.loan.amount.toFixed(2)} | Total Due: $${p.loan.totalDue.toFixed(2)}<br>
+                Due: ${new Date(p.loan.dueDate).toLocaleDateString()}<br>
+                <button class="btn btn-sm btn-success" onclick="chairApprove('${p.member.regNo}', ${p.idx})">✅ Approve</button>
+                <button class="btn btn-sm btn-danger" onclick="chairReject('${p.member.regNo}', ${p.idx})">❌ Reject</button>
+            </div>
+        </div>`).join('');
+}
+function chairApprove(reg, idx) {
+    const m = db.members.find(x => x.regNo === reg);
+    m.loans[idx].status = 'Pending Treasurer';
+    saveDB();
+    refreshChair();
+    alert('Approved. Sent to Treasurer.');
+}
+function chairReject(reg, idx) {
+    const m = db.members.find(x => x.regNo === reg);
+    m.loans[idx].status = 'Rejected';
+    saveDB();
+    refreshChair();
+}
+
+// ============ TREASURER ============
+function refreshTreas() {
+    const pendDiv = document.getElementById('treasDeposits');
+    const pending = db.pendingDeposits.filter(d => d.status === 'Pending');
+    if (pending.length === 0) {
+        pendDiv.innerHTML = '<p style="color:#7f8c8d;">No pending deposits.</p>';
+    } else {
+        pendDiv.innerHTML = pending.map(d => {
+            const m = db.members.find(x => x.regNo === d.memberRegNo);
+            const pic = m ? getAvatarSrc(m.profilePic) : DEFAULT_AVATAR;
+            return `
+            <div class="approval-item">
+                <img class="avatar avatar-sm" src="${pic}" alt="">
+                <div class="approval-item-content">
+                    <strong>${d.memberName}</strong> (${d.memberRegNo})<br>
+                    Amount: <strong>$${d.amount.toFixed(2)}</strong><br>
+                    Submitted: ${new Date(d.createdAt).toLocaleString()}<br>
+                    <button class="btn btn-sm btn-success" onclick="approveDeposit(${d.id})">✅ Approve</button>
+                    <button class="btn btn-sm btn-danger" onclick="rejectDeposit(${d.id})">❌ Reject</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    const loanDiv = document.getElementById('treasLoans');
+    const loanPending = [];
+    db.members.forEach(m => {
+        m.loans.forEach((l, idx) => {
+            if (l.status === 'Pending Treasurer') loanPending.push({member: m, loan: l, idx});
+        });
+    });
+    if (loanPending.length === 0) {
+        loanDiv.innerHTML = '<p style="color:#7f8c8d;">No loans ready for disbursement.</p>';
+    } else {
+        loanDiv.innerHTML = loanPending.map(p => `
+            <div class="approval-item">
+                <img class="avatar avatar-sm" src="${getAvatarSrc(p.member.profilePic)}" alt="">
+                <div class="approval-item-content">
+                    <strong>${p.member.firstName} ${p.member.lastName}</strong> (${p.member.regNo})<br>
+                    Amount: $${p.loan.amount.toFixed(2)} | Total Due: $${p.loan.totalDue.toFixed(2)}<br>
+                    ✅ Approved by Chairperson<br>
+                    <button class="btn btn-sm btn-success" onclick="treasDisburse('${p.member.regNo}', ${p.idx})">💵 Disburse</button>
+                </div>
+            </div>`).join('');
+    }
+}
+
+function approveDeposit(id) {
+    const dep = db.pendingDeposits.find(d => d.id === id);
+    if (!dep) return;
+    const m = db.members.find(x => x.regNo === dep.memberRegNo);
+    if (!m) return;
+    m.savings += dep.amount;
+    dep.status = 'Approved';
+    saveDB();
+    alert(`✅ $${dep.amount.toFixed(2)} added to ${m.firstName}'s savings.`);
+    refreshTreas();
+}
+
+function rejectDeposit(id) {
+    const dep = db.pendingDeposits.find(d => d.id === id);
+    if (!dep) return;
+    dep.status = 'Rejected';
+    saveDB();
+    alert(`❌ Deposit of $${dep.amount.toFixed(2)} rejected.`);
+    refreshTreas();
+}
+
+function treasDisburse(reg, idx) {
+    const m = db.members.find(x => x.regNo === reg);
+    m.loans[idx].status = 'Active';
+    saveDB();
+    refreshTreas();
+    alert(`💵 $${m.loans[idx].amount.toFixed(2)} disbursed to ${m.firstName}.`);
+}
+
+// ============ ADMIN - FULL ACCESS ============
+function refreshAdmin() {
+    const list = document.getElementById('memberList');
+    if (db.members.length === 0) {
+        list.innerHTML = '<p style="color:#7f8c8d;">No members yet.</p>';
+    } else {
+        list.innerHTML = db.members.map(m => `
+            <div class="member-item">
+                <div class="member-info">
+                    <img class="avatar avatar-sm" src="${getAvatarSrc(m.profilePic)}" alt="">
+                    <div>
+                        <strong>${m.firstName} ${m.lastName}</strong> - ${m.regNo}<br>
+                        <small>${m.email} | ${m.phone} | Savings: $${m.savings.toFixed(2)} | Status: ${m.isActive ? '✅ Active' : '⏸ Inactive'}</small>
+                    </div>
+                </div>
+                <div class="member-actions">
+                    <button class="btn btn-sm btn-info" onclick="viewFullDetails('${m.regNo}')">🔍 Full Details</button>
+                    <button class="btn btn-sm" onclick="openEdit('${m.regNo}')">✏️ Edit</button>
+                    <button class="btn btn-sm btn-warning" onclick="toggleStatus('${m.regNo}')">${m.isActive ? '⏸ Suspend' : '✅ Activate'}</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteMember('${m.regNo}')">🗑 Delete</button>
+                </div>
+            </div>`).join('');
+    }
+    document.getElementById('setInterest').value = db.settings.interest;
+    document.getElementById('setPeriod').value = db.settings.periodWeeks;
+    document.getElementById('setDepositPhone').value = db.settings.depositPhone;
+    document.getElementById('setAdminPass').value = '';
+    document.getElementById('setChairPass').value = '';
+    document.getElementById('setTreasPass').value = '';
+}
+
+// ADMIN: VIEW FULL DETAILS (including password)
+function viewFullDetails(regNo) {
+    const m = db.members.find(x => x.regNo === regNo);
+    if (!m) return;
+
+    const myDeposits = db.pendingDeposits.filter(d => d.memberRegNo === regNo);
+    const activeLoans = m.loans.filter(l => l.status !== 'Repaid' && l.status !== 'Rejected');
+
+    const content = document.getElementById('viewDetailsContent');
+    content.innerHTML = `
+        <div style="text-align:center; margin:15px 0;">
+            <img class="avatar avatar-xl" src="${getAvatarSrc(m.profilePic)}" alt="">
+            <h3 style="margin-top:10px;">${m.firstName} ${m.lastName}</h3>
+            <div class="reg-number">${m.regNo}</div>
+        </div>
+
+        <h3>🔐 Login Credentials (ADMIN ONLY)</h3>
+        <div class="detail-grid">
+            <div class="detail-item full">
+                <label>Login ID</label>
+                <div class="value">${m.regNo}</div>
+            </div>
+            <div class="detail-item full">
+                <label>Password (Visible to Admin)</label>
+                <div class="password-field">${m.password}</div>
+            </div>
+        </div>
+
+        <h3>👤 Bio-Data</h3>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <label>Email</label>
+                <div class="value">${m.email || 'N/A'}</div>
+            </div>
+            <div class="detail-item">
+                <label>Phone</label>
+                <div class="value">${m.phone || 'N/A'}</div>
+            </div>
+            <div class="detail-item full">
+                <label>Address</label>
+                <div class="value">${m.address || 'N/A'}</div>
+            </div>
+            <div class="detail-item full">
+                <label>Next of Kin</label>
+                <div class="value">${m.nextOfKin || 'N/A'}</div>
+            </div>
+            <div class="detail-item full">
+                <label>Employment</label>
+                <div class="value">${m.employment || 'N/A'}</div>
+            </div>
+        </div>
+
+        <h3>💰 Financial Summary</h3>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <label>Confirmed Savings</label>
+                <div class="value" style="color:#27ae60;">$${m.savings.toFixed(2)}</div>
+            </div>
+            <div class="detail-item">
+                <label>Account Status</label>
+                <div class="value">${m.isActive ? '✅ Active' : '⏸ Inactive'}</div>
+            </div>
+        </div>
+
+        <h3>⏳ Deposit History (${myDeposits.length})</h3>
+        ${myDeposits.length === 0 ? '<p style="color:#7f8c8d;">No deposits recorded.</p>' :
+            myDeposits.map(d => `
+                <div class="history-item">
+                    <strong>$${d.amount.toFixed(2)}</strong> - ${new Date(d.createdAt).toLocaleString()} - 
+                    <span style="color:${d.status==='Approved'?'#27ae60':d.status==='Rejected'?'#e74c3c':'#f39c12'};">${d.status}</span>
+                </div>`).join('')}
+
+        <h3>📥 Loan History (${m.loans.length})</h3>
+        ${m.loans.length === 0 ? '<p style="color:#7f8c8d;">No loans taken.</p>' :
+            m.loans.map(l => `
+                <div class="history-item">
+                    <strong>$${l.amount.toFixed(2)}</strong> → Total: $${l.totalDue.toFixed(2)}<br>
+                    Due: ${new Date(l.dueDate).toLocaleDateString()} - 
+                    <span style="color:${l.status==='Active'?'#e74c3c':l.status==='Repaid'?'#27ae60':'#f39c12'};">${l.status}</span>
+                </div>`).join('')}
+
+        <p style="margin-top:15px; font-size:11px; color:#7f8c8d;">
+            Member since: ${new Date(m.createdAt).toLocaleString()}
+        </p>
+    `;
+    document.getElementById('viewDetailsModal').classList.add('active');
+}
+
+function openEdit(regNo) {
+    const m = db.members.find(x => x.regNo === regNo);
+    if (!m) return;
+    document.getElementById('editRegNo').value = m.regNo;
+    document.getElementById('editFirst').value = m.firstName;
+    document.getElementById('editLast').value = m.lastName;
+    document.getElementById('editPhone').value = m.phone;
+    document.getElementById('editEmail').value = m.email;
+    document.getElementById('editAddress').value = m.address || '';
+    document.getElementById('editKin').value = m.nextOfKin || '';
+    document.getElementById('editJob').value = m.employment || '';
+    document.getElementById('editPass').value = '';
+    document.getElementById('adminEditPicPreview').src = getAvatarSrc(m.profilePic);
+    tempPicData = m.profilePic;
+    document.getElementById('editMemberModal').classList.add('active');
+}
+
+function saveEdit() {
+    const regNo = document.getElementById('editRegNo').value;
+    const m = db.members.find(x => x.regNo === regNo);
+    if (!m) return;
+    m.firstName = document.getElementById('editFirst').value.trim();
+    m.lastName = document.getElementById('editLast').value.trim();
+    m.phone = document.getElementById('editPhone').value.trim();
+    m.email = document.getElementById('editEmail').value.trim();
+    m.address = document.getElementById('editAddress').value;
+    m.nextOfKin = document.getElementById('editKin').value;
+    m.employment = document.getElementById('editJob').value;
+    const newPass = document.getElementById('editPass').value;
+    if (newPass.length >= 6) m.password = newPass;
+    if (tempPicData) m.profilePic = tempPicData;
+    saveDB();
+    closeModal('editMemberModal');
+    alert('✅ Member updated!');
+    refreshAdmin();
+}
+
+function toggleStatus(regNo) {
+    const m = db.members.find(x => x.regNo === regNo);
+    if (!m) return;
+    m.isActive = !m.isActive;
+    saveDB();
+    alert(`✅ Member ${m.isActive ? 'activated' : 'suspended'}.`);
+    refreshAdmin();
+}
+
+function deleteMember(regNo) {
+    if (!confirm('⚠️ Are you sure you want to DELETE this member? This cannot be undone!')) return;
+    db.members = db.members.filter(m => m.regNo !== regNo);
+    db.pendingDeposits = db.pendingDeposits.filter(d => d.memberRegNo !== regNo);
+    saveDB();
+    alert('🗑 Member deleted.');
+    refreshAdmin();
+}
+
+function saveSettings() {
+    db.settings.interest = parseFloat(document.getElementById('setInterest').value);
+    db.settings.periodWeeks = parseInt(document.getElementById('setPeriod').value);
+    db.settings.depositPhone = document.getElementById('setDepositPhone').value.trim() || '+254 712 345 678';
+    
+    const adminPass = document.getElementById('setAdminPass').value;
+    const chairPass = document.getElementById('setChairPass').value;
+    const treasPass = document.getElementById('setTreasPass').value;
+    if (adminPass) db.staff.admin.pass = adminPass;
+    if (chairPass) db.staff.chair.pass = chairPass;
+    if (treasPass) db.staff.treasurer.pass = treasPass;
+    
+    saveDB();
+    alert('✅ All settings saved!');
+    refreshAdmin();
+}
+
+function triggerAlert() {
+    const div = document.getElementById('alertTest');
+    const withLoans = db.members.filter(m => m.loans.some(l => l.status === 'Active'));
+    if (withLoans.length === 0) {
+        div.innerHTML = '<strong>No active loans to alert.</strong>';
+    } else {
+        div.innerHTML = `<strong>📧 Reminder emails sent to:</strong><br>` +
+            withLoans.map(m => `✅ ${m.email} - Balance: $${m.loans[0].totalDue.toFixed(2)}`).join('<br>');
+    }
+    div.style.display = 'block';
+}
+
+// ============ INIT ============
+updateNav();
+</script>
+
+</body>
+</html>
